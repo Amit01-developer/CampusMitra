@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard — CampusMitra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo" style="text-decoration:none">
+                <i class="fas fa-handshake"></i>
+                <span>CampusMitra</span>
+            </a>
+            <nav><ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="owner-dashboard.html" class="nav-active">Owner</a></li>
+                <li><a href="borrower-dashboard.html">Borrower</a></li>
+            </ul></nav>
+            <div class="auth-buttons">
+                <button class="dark-toggle" id="darkToggle"><i class="fas fa-moon"></i> Dark</button>
+                <span class="dash-user-name" id="dashUserName"></span>
+                <button class="btn btn-outline" onclick="logout()">Log Out</button>
+            </div>
+            <button class="hamburger" id="dashHamburger" aria-label="Toggle menu" onclick="toggleDashSidebar()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-profile" id="sidebarProfile">
+            <div class="avatar" id="avatarInitial">?</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Loading...</div>
+                <div class="sidebar-role">Item Owner</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+            <a href="#" class="sidebar-link" data-tab="my-items"><i class="fas fa-box-open"></i> My Items</a>
+            <a href="#" class="sidebar-link" data-tab="add-item"><i class="fas fa-plus-circle"></i> Add New Item</a>
+            <a href="#" class="sidebar-link" data-tab="requests"><i class="fas fa-bell"></i> Rental Requests <span class="badge" id="reqBadge">0</span></a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-main">
+
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="dash-header">
+                <h1>Welcome back, <span id="ownerGreet">Owner</span> 👋</h1>
+                <p>Here's a summary of your listings and earnings.</p>
+            </div>
+            <div class="overview-cards">
+                <div class="ov-card indigo">
+                    <i class="fas fa-box-open"></i>
+                    <div>
+                        <div class="ov-num" id="ovTotalItems">0</div>
+                        <div class="ov-label">Total Listed Items</div>
+                    </div>
+                </div>
+                <div class="ov-card teal">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <div class="ov-num" id="ovAvailable">0</div>
+                        <div class="ov-label">Available Now</div>
+                    </div>
+                </div>
+                <div class="ov-card amber">
+                    <i class="fas fa-handshake"></i>
+                    <div>
+                        <div class="ov-num" id="ovRented">0</div>
+                        <div class="ov-label">Currently Rented</div>
+                    </div>
+                </div>
+                <div class="ov-card purple">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <div class="ov-num" id="ovPending">0</div>
+                        <div class="ov-label">Pending Requests</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-section-title">Recent Rental Requests</div>
+            <div id="recentRequests"><div class="empty-state"><i class="fas fa-inbox"></i><p>No requests yet</p></div></div>
+        </div>
+
+        <!-- MY ITEMS TAB -->
+        <div class="tab-content" id="tab-my-items">
+            <div class="dash-header">
+                <h1>My Listed Items</h1>
+                <button class="btn btn-primary" onclick="switchTab('add-item')"><i class="fas fa-plus"></i> Add Item</button>
+            </div>
+            <div class="items-owner-grid" id="ownerItemsGrid">
+                <div class="empty-state"><i class="fas fa-box-open"></i><p>No items listed yet</p></div>
+            </div>
+        </div>
+
+        <!-- ADD ITEM TAB -->
+        <div class="tab-content" id="tab-add-item">
+            <div class="dash-header">
+                <h1>List a New Item</h1>
+                <p>Fill in the details to make your item available for rent.</p>
+            </div>
+            <div class="form-card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Item Name *</label>
+                        <input type="text" id="newItemName" placeholder="e.g. MacBook Air M1" />
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select id="newItemCategory">
+                            <option value="">Select category</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="textbooks">Textbooks & Study</option>
+                            <option value="tools">Tools & Equipment</option>
+                            <option value="clothing">Clothing & Formal Wear</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rental Price (₹) *</label>
+                        <input type="number" id="newItemPrice" placeholder="e.g. 500" />
+                    </div>
+                    <div class="form-group">
+                        <label>Price Unit *</label>
+                        <select id="newItemUnit">
+                            <option value="day">Per Day</option>
+                            <option value="week">Per Week</option>
+                            <option value="month">Per Month</option>
+                            <option value="event">Per Event</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Deposit Amount (₹)</label>
+                        <input type="number" id="newItemDeposit" placeholder="e.g. 2000" />
+                    </div>
+                    <div class="form-group">
+                        <label>Condition</label>
+                        <select id="newItemCondition">
+                            <option value="New">New</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good" selected>Good</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="newItemDesc" rows="3" placeholder="Describe your item — specs, what's included, usage tips..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;padding:14px;font-size:1rem" onclick="submitNewItem()">
+                    <i class="fas fa-upload"></i> List Item
+                </button>
+            </div>
+        </div>
+
+        <!-- REQUESTS TAB -->
+        <div class="tab-content" id="tab-requests">
+            <div class="dash-header">
+                <h1>Rental Requests</h1>
+                <p>Manage incoming requests from borrowers.</p>
+            </div>
+            <div id="allRequestsList"><div class="empty-state"><i class="fas fa-bell"></i><p>No requests yet</p></div></div>
+        </div>
+
+    </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="dashboard.js"></script>
+<script>initDashboard('owner')</script>
+</body>
+</html>
