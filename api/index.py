@@ -448,3 +448,6 @@ def update_profile():
     fdb.collection('users').document(user['id']).update(update)
     updated = fdb.collection('users').document(user['id']).get()
     return jsonify(user_to_dict(updated.id, updated.to_dict()))
+
+# Vercel handler
+handler = app
