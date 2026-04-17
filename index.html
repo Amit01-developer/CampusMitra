@@ -556,7 +556,10 @@
             try {
                 const result = await signInWithPopup(auth, provider);
                 const idToken = await result.user.getIdToken();
-                const res = await fetch('http://127.0.0.1:5000/api/auth/google', {
+                const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                    ? 'http://127.0.0.1:5000/api'
+                    : '/api';
+                const res = await fetch(`${apiBase}/auth/google`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id_token: idToken })
