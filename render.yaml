@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: campusmitra-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: FIREBASE_CREDENTIALS_JSON
+        sync: false
