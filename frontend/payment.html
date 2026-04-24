@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment — CampusMitra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- HEADER — same as index.html & dashboards -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a class="logo" href="index.html" style="text-decoration:none">
+                <i class="fas fa-handshake"></i>
+                <span>CampusMitra</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="borrower-dashboard.html">Browse</a></li>
+                    <li><a href="owner-dashboard.html">List Item</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a class="btn btn-outline" href="javascript:history.back()" style="text-decoration:none;display:flex;align-items:center;gap:6px">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="pay-wrap">
+
+    <!-- LEFT: Item Summary -->
+    <div>
+        <!-- Steps -->
+        <div class="steps-bar">
+            <div class="step-dot done"><div class="dot"><i class="fas fa-check"></i></div> Browse</div>
+            <div class="step-line done"></div>
+            <div class="step-dot done"><div class="dot"><i class="fas fa-check"></i></div> Select</div>
+            <div class="step-line done"></div>
+            <div class="step-dot active"><div class="dot">3</div> Payment</div>
+            <div class="step-line"></div>
+            <div class="step-dot"><div class="dot">4</div> Confirm</div>
+        </div>
+
+        <div class="pay-card">
+            <div class="pay-title"><i class="fas fa-receipt" style="color:var(--primary)"></i> Rental Summary</div>
+
+            <div class="item-banner" id="itemBanner">
+                <i class="fas fa-laptop" id="itemIcon"></i>
+                <div>
+                    <h2 id="summaryItemName">Loading...</h2>
+                    <p id="summaryOwner"></p>
+                    <span id="rentalTypeBadge"></span>
+                </div>
+            </div>
+
+            <div class="detail-row" id="descRow">
+                <span class="detail-label"><i class="fas fa-info-circle"></i> About</span>
+                <span class="detail-value" id="summaryDesc" style="text-align:right;max-width:60%;font-weight:500;font-size:0.88rem"></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-tag"></i> Price</span>
+                <span class="detail-value" id="summaryPrice">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-layer-group"></i> Condition</span>
+                <span class="detail-value" id="summaryCondition">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-calendar-alt"></i> Start Date</span>
+                <span class="detail-value" id="summaryStart">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-calendar-check"></i> End Date</span>
+                <span class="detail-value" id="summaryEnd">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-clock"></i> Duration</span>
+                <span class="detail-value" id="summaryDays">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label"><i class="fas fa-shield-alt"></i> Security Deposit</span>
+                <span class="detail-value" id="summaryDeposit">—</span>
+            </div>
+
+            <div class="total-row">
+                <span class="total-label">Total Payable</span>
+                <span class="total-amount" id="summaryTotal">₹0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Payment Form -->
+    <div>
+        <div class="pay-card">
+            <div class="pay-title"><i class="fas fa-lock" style="color:var(--secondary)"></i> Rental Details & Payment</div>
+
+            <!-- Dates -->
+            <div class="date-row" style="margin-bottom:18px">
+                <div class="form-group" style="margin:0">
+                    <label>Start Date</label>
+                    <input type="date" id="startDate" class="form-control" oninput="recalcTotal()" />
+                </div>
+                <div class="form-group" style="margin:0">
+                    <label>End Date</label>
+                    <input type="date" id="endDate" class="form-control" oninput="recalcTotal()" />
+                </div>
+            </div>
+
+            <!-- Renter Info -->
+            <div class="form-group" style="margin-bottom:14px">
+                <label>Your Name</label>
+                <input type="text" id="renterName" placeholder="Full name" class="form-control" />
+            </div>
+            <div class="form-group" style="margin-bottom:18px">
+                <label>Campus Email</label>
+                <input type="email" id="renterEmail" placeholder="you@campus.edu" class="form-control" />
+            </div>
+
+            <!-- Payment Method -->
+            <div id="paymentSection">
+                <div class="pay-title" style="font-size:1rem;margin-bottom:12px">
+                    <i class="fas fa-credit-card" style="color:var(--accent)"></i> Payment Method
+                </div>
+                <div class="pay-methods">
+                    <label class="pay-method selected" onclick="selectMethod('upi',this)">
+                        <input type="radio" name="payMethod" value="upi" checked>
+                        <span class="pay-method-icon">📱</span>
+                        <div>
+                            <div class="pay-method-label">UPI</div>
+                            <div class="pay-method-sub">GPay, PhonePe, Paytm, BHIM</div>
+                        </div>
+                    </label>
+                    <label class="pay-method" onclick="selectMethod('card',this)">
+                        <input type="radio" name="payMethod" value="card">
+                        <span class="pay-method-icon">💳</span>
+                        <div>
+                            <div class="pay-method-label">Debit / Credit Card</div>
+                            <div class="pay-method-sub">Visa, Mastercard, RuPay</div>
+                        </div>
+                    </label>
+                    <label class="pay-method" onclick="selectMethod('netbanking',this)">
+                        <input type="radio" name="payMethod" value="netbanking">
+                        <span class="pay-method-icon">🏦</span>
+                        <div>
+                            <div class="pay-method-label">Net Banking</div>
+                            <div class="pay-method-sub">All major banks supported</div>
+                        </div>
+                    </label>
+                    <label class="pay-method" onclick="selectMethod('cod',this)">
+                        <input type="radio" name="payMethod" value="cod">
+                        <span class="pay-method-icon">🤝</span>
+                        <div>
+                            <div class="pay-method-label">Pay on Handover</div>
+                            <div class="pay-method-sub">Cash / UPI at pickup</div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- UPI Field -->
+                <div id="upiSection" style="margin-bottom:14px">
+                    <div class="form-group" style="margin:0">
+                        <label>UPI ID</label>
+                        <input type="text" id="upiId" placeholder="yourname@upi" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Card Fields -->
+                <div id="cardSection" style="display:none;margin-bottom:14px">
+                    <div class="form-group" style="margin-bottom:12px">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" class="form-control" oninput="formatCard(this)" />
+                    </div>
+                    <div class="card-row">
+                        <div class="form-group" style="margin:0">
+                            <label>Expiry</label>
+                            <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5" class="form-control" oninput="formatExpiry(this)" />
+                        </div>
+                        <div class="form-group" style="margin:0">
+                            <label>CVV</label>
+                            <input type="password" id="cardCvv" placeholder="•••" maxlength="3" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Banking -->
+                <div id="netSection" style="display:none;margin-bottom:14px">
+                    <div class="form-group" style="margin:0">
+                        <label>Select Bank</label>
+                        <select id="bankSelect" class="form-control">
+                            <option value="">-- Choose your bank --</option>
+                            <option>SBI</option><option>HDFC Bank</option><option>ICICI Bank</option>
+                            <option>Axis Bank</option><option>Kotak Mahindra</option><option>PNB</option>
+                            <option>Bank of Baroda</option><option>Canara Bank</option><option>Union Bank</option>
+                        </select>
+                    </div>
+                </div>
+            </div><!-- /paymentSection -->
+
+            <!-- Borrow note -->
+            <div id="borrowNote" style="display:none">
+                <div class="borrow-note">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Free Borrow Request</strong> — No payment needed. The owner will review and approve your request.
+                </div>
+            </div>
+
+            <button class="pay-btn" id="payBtn" onclick="processPayment()">
+                <i class="fas fa-lock"></i> Pay & Confirm Rental
+            </button>
+            <div class="secure-note">
+                <i class="fas fa-shield-alt" style="color:#10b981"></i>
+                256-bit SSL encrypted &nbsp;|&nbsp; 100% Secure
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h2 id="successTitle">Rental Confirmed!</h2>
+        <p id="successMsg">Your rental request has been sent to the owner. You'll be notified once approved.</p>
+        <div class="booking-id">Booking ID: <span id="bookingId">—</span></div>
+        <a href="borrower-dashboard.html" class="back-home-btn">
+            <i class="fas fa-receipt"></i> View My Rentals
+        </a>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:5000/api'
+    : 'https://campusmitra-bwi0.onrender.com/api';
+
+const authToken  = localStorage.getItem('cs_token');
+const params     = new URLSearchParams(location.search);
+
+const itemId     = params.get('item_id')      || '';
+const itemName   = params.get('name')         || 'Item';
+const itemPrice  = params.get('price')        || '—';
+const priceAmt   = parseFloat(params.get('price_amount'))  || 0;
+const priceUnit  = params.get('price_unit')   || 'day';
+const condition  = params.get('condition')    || 'Good';
+const deposit    = params.get('deposit')      || '—';
+const depositAmt = parseFloat(params.get('deposit_amount')) || 0;
+const ownerName  = params.get('owner')        || '—';
+const catSlug    = params.get('category')     || 'electronics';
+const rentalType = params.get('rental_type')  || 'rent';
+const description= params.get('description') || '';
+
+const iconMap = { electronics:'fa-laptop', textbooks:'fa-book', tools:'fa-tools', clothing:'fa-tshirt' };
+const gradMap = {
+    electronics: 'linear-gradient(135deg,#4f46e5,#6366f1)',
+    textbooks:   'linear-gradient(135deg,#0d9488,#14b8a6)',
+    tools:       'linear-gradient(135deg,#f59e0b,#d97706)',
+    clothing:    'linear-gradient(135deg,#7c3aed,#8b5cf6)'
+};
+
+document.getElementById('summaryItemName').textContent  = itemName;
+document.getElementById('summaryOwner').textContent     = 'Owner: ' + ownerName;
+document.getElementById('summaryPrice').textContent     = itemPrice;
+document.getElementById('summaryCondition').textContent = condition;
+document.getElementById('summaryDeposit').textContent   = deposit;
+document.getElementById('itemIcon').className           = 'fas ' + (iconMap[catSlug] || 'fa-box');
+document.getElementById('itemBanner').style.background  = gradMap[catSlug] || gradMap.electronics;
+
+const isBorrow = rentalType === 'borrow';
+document.title = (isBorrow ? 'Borrow' : 'Rent') + ' — ' + itemName + ' | CampusMitra';
+
+const badge = document.getElementById('rentalTypeBadge');
+badge.textContent       = isBorrow ? '🤝 Borrow Request' : '🛒 Rent Now';
+badge.style.cssText     = 'display:inline-block;margin-top:6px;padding:3px 12px;border-radius:20px;font-size:0.78rem;font-weight:700;background:' +
+    (isBorrow ? 'rgba(13,148,136,0.18);color:#0d9488' : 'rgba(79,70,229,0.18);color:#4f46e5');
+
+document.getElementById('payBtn').innerHTML = isBorrow
+    ? '<i class="fas fa-handshake"></i> Confirm Borrow Request'
+    : '<i class="fas fa-lock"></i> Pay & Confirm Rental';
+
+if (description) document.getElementById('summaryDesc').textContent = description;
+
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('startDate').min = today;
+document.getElementById('endDate').min   = today;
+
+if (authToken) {
+    fetch(API + '/auth/me', { headers: { Authorization: 'Bearer ' + authToken } })
+        .then(r => r.json())
+        .then(u => {
+            if (u.name)  document.getElementById('renterName').value  = u.name;
+            if (u.email) document.getElementById('renterEmail').value = u.email;
+        }).catch(() => {});
+}
+
+function recalcTotal() {
+    const s = document.getElementById('startDate').value;
+    const e = document.getElementById('endDate').value;
+    if (!s || !e) { document.getElementById('summaryTotal').textContent = '₹' + depositAmt.toLocaleString('en-IN'); return; }
+    const days  = Math.max(1, Math.ceil((new Date(e) - new Date(s)) / 86400000));
+    const total = priceAmt * days + depositAmt;
+    document.getElementById('summaryStart').textContent = new Date(s).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('summaryEnd').textContent   = new Date(e).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('summaryDays').textContent  = days + (days === 1 ? ' day' : ' days');
+    document.getElementById('summaryTotal').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+function selectMethod(method, el) {
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('upiSection').style.display  = method === 'upi'        ? 'block' : 'none';
+    document.getElementById('cardSection').style.display = method === 'card'       ? 'block' : 'none';
+    document.getElementById('netSection').style.display  = method === 'netbanking' ? 'block' : 'none';
+}
+
+function formatCard(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '');
+    if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2, 4);
+    el.value = v;
+}
+
+function showToast(msg, type = 'info') {
+    const c = document.getElementById('toastContainer');
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.innerHTML = '<i class="fas ' + icons[type] + '"></i><span>' + msg + '</span><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+    c.appendChild(t);
+    setTimeout(() => { t.style.animation = 'slideOut .3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+async function processPayment() {
+    if (!authToken) { showToast('Please log in first', 'error'); setTimeout(() => location.href = 'index.html', 1500); return; }
+
+    // item_id must be present
+    if (!itemId) {
+        showToast('Item ID missing — please select an item from Browse or Category pages.', 'error');
+        btn.disabled  = false;
+        btn.innerHTML = isBorrow ? '<i class="fas fa-handshake"></i> Confirm Borrow Request' : '<i class="fas fa-lock"></i> Pay & Confirm Rental';
+        return;
+    }
+
+    const startDate = document.getElementById('startDate').value;
+    const endDate   = document.getElementById('endDate').value;
+    const name      = document.getElementById('renterName').value.trim();
+    const email     = document.getElementById('renterEmail').value.trim();
+
+    if (!startDate || !endDate) { showToast('Please select rental dates', 'error'); return; }
+    if (new Date(endDate) <= new Date(startDate)) { showToast('End date must be after start date', 'error'); return; }
+    if (!name || !email) { showToast('Please fill in your details', 'error'); return; }
+
+    // Payment validation only for rent — skip for borrow
+    if (!isBorrow) {
+        const method = document.querySelector('input[name=payMethod]:checked').value;
+        if (method === 'upi' && !document.getElementById('upiId').value.trim()) { showToast('Please enter your UPI ID', 'error'); return; }
+        if (method === 'card') {
+            if (!document.getElementById('cardNum').value.trim()) { showToast('Please enter card number', 'error'); return; }
+            if (!document.getElementById('cardExp').value.trim()) { showToast('Please enter expiry date', 'error'); return; }
+            if (!document.getElementById('cardCvv').value.trim()) { showToast('Please enter CVV', 'error'); return; }
+        }
+        if (method === 'netbanking' && !document.getElementById('bankSelect').value) { showToast('Please select a bank', 'error'); return; }
+    }
+
+    const days       = Math.max(1, Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000));
+    const totalPrice = isBorrow ? 0 : (priceAmt * days + depositAmt);
+    const btn        = document.getElementById('payBtn');
+    btn.disabled     = true;
+    btn.innerHTML    = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+    try {
+        const res  = await fetch(API + '/rentals', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                item_id:     itemId,
+                rental_type: rentalType,
+                start_date:  startDate,
+                end_date:    endDate,
+                total_price: totalPrice
+            })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            showToast(data.error || 'Request failed (status ' + res.status + ')', 'error');
+            btn.disabled  = false;
+            btn.innerHTML = isBorrow ? '<i class="fas fa-handshake"></i> Confirm Borrow Request' : '<i class="fas fa-lock"></i> Pay & Confirm Rental';
+            return;
+        }
+        document.getElementById('bookingId').textContent        = 'CM-' + data.id.substring(0, 8).toUpperCase();
+        document.getElementById('successTitle').textContent      = isBorrow ? 'Borrow Request Sent!' : 'Rental Confirmed!';
+        document.getElementById('successMsg').textContent        = isBorrow
+            ? 'Your borrow request has been sent to the owner. They will review and approve it shortly.'
+            : 'Your rental request has been sent to the owner. You\'ll be notified once approved.';
+        document.getElementById('successOverlay').style.display = 'flex';
+    } catch (e) {
+        console.error('processPayment error:', e);
+        showToast('Network error: ' + e.message, 'error');
+        btn.disabled  = false;
+        btn.innerHTML = isBorrow ? '<i class="fas fa-handshake"></i> Confirm Borrow Request' : '<i class="fas fa-lock"></i> Pay & Confirm Rental';
+    }
+}
+
+if (isBorrow) {
+    document.getElementById('paymentSection').style.display = 'none';
+    document.getElementById('borrowNote').style.display     = 'block';
+}
+
+// Warn if item_id is missing (came from a demo/static card)
+if (!itemId) {
+    document.getElementById('payBtn').disabled = true;
+    document.getElementById('payBtn').innerHTML = '<i class="fas fa-exclamation-triangle"></i> No Item Selected';
+    showToast('This is a demo item. Please browse real items from the category pages.', 'info');
+}
+</script>
+</body>
+</html>

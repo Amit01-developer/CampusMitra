@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrower Dashboard — CampusMitra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo" style="text-decoration:none">
+                <i class="fas fa-handshake"></i>
+                <span>CampusMitra</span>
+            </a>
+            <nav><ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="owner-dashboard.html">Owner</a></li>
+                <li><a href="borrower-dashboard.html" class="nav-active">Borrower</a></li>
+            </ul></nav>
+            <div class="auth-buttons">
+                <button class="dark-toggle" id="darkToggle"><i class="fas fa-moon"></i> Dark</button>
+                <span class="dash-user-name" id="dashUserName"></span>
+                <button class="btn btn-outline" onclick="logout()">Log Out</button>
+            </div>
+            <button class="hamburger" id="dashHamburger" aria-label="Toggle menu" onclick="toggleDashSidebar()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-profile">
+            <div class="avatar" id="avatarInitial">?</div>
+            <div>
+                <div class="sidebar-name" id="sidebarName">Loading...</div>
+                <div class="sidebar-role">Borrower</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+            <a href="#" class="sidebar-link" data-tab="browse"><i class="fas fa-search"></i> Browse Items</a>
+            <a href="#" class="sidebar-link" data-tab="my-rentals"><i class="fas fa-receipt"></i> My Rentals <span class="badge" id="rentalBadge">0</span></a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-main">
+
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="dash-header">
+                <h1>Welcome back, <span id="borrowerGreet">Borrower</span> 👋</h1>
+                <p>Find items to borrow and track your active rentals.</p>
+            </div>
+            <div class="overview-cards">
+                <div class="ov-card indigo">
+                    <i class="fas fa-receipt"></i>
+                    <div>
+                        <div class="ov-num" id="ovTotal">0</div>
+                        <div class="ov-label">Total Rentals</div>
+                    </div>
+                </div>
+                <div class="ov-card teal">
+                    <i class="fas fa-spinner"></i>
+                    <div>
+                        <div class="ov-num" id="ovActive">0</div>
+                        <div class="ov-label">Active Now</div>
+                    </div>
+                </div>
+                <div class="ov-card amber">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <div class="ov-num" id="ovPendingB">0</div>
+                        <div class="ov-label">Pending Approval</div>
+                    </div>
+                </div>
+                <div class="ov-card purple">
+                    <i class="fas fa-check-double"></i>
+                    <div>
+                        <div class="ov-num" id="ovReturned">0</div>
+                        <div class="ov-label">Returned</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-section-title">Your Active Rentals</div>
+            <div id="activeRentalsList"><div class="empty-state"><i class="fas fa-inbox"></i><p>No active rentals</p></div></div>
+        </div>
+
+        <!-- BROWSE TAB -->
+        <div class="tab-content" id="tab-browse">
+            <div class="dash-header">
+                <h1>Browse Available Items</h1>
+            </div>
+            <div class="browse-filters">
+                <div class="search-bar-dash">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="browseSearch" placeholder="Search items..." oninput="filterBrowse()" />
+                </div>
+                <select id="browseCategory" onchange="filterBrowse()">
+                    <option value="">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="textbooks">Textbooks</option>
+                    <option value="tools">Tools</option>
+                    <option value="clothing">Clothing</option>
+                </select>
+                <select id="browseCondition" onchange="filterBrowse()">
+                    <option value="">Any Condition</option>
+                    <option value="New">New</option>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                </select>
+            </div>
+            <div class="browse-grid" id="browseGrid">
+                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading items...</p></div>
+            </div>
+        </div>
+
+        <!-- MY RENTALS TAB -->
+        <div class="tab-content" id="tab-my-rentals">
+            <div class="dash-header">
+                <h1>My Rentals</h1>
+                <p>All your past and current rental requests.</p>
+            </div>
+            <div id="allRentalsList"><div class="empty-state"><i class="fas fa-receipt"></i><p>No rentals yet</p></div></div>
+        </div>
+
+    </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="dashboard.js"></script>
+<script>initDashboard('borrower')</script>
+<!-- Firebase Google Sign-In -->
+<script type="module" src="firebase-auth.js"></script>
+</body>
+</html>
