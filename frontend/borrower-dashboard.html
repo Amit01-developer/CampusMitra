@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dashboard.css">
     <script src="theme.js"></script>
+    <script src="chatbot.js" defer></script>
 </head>
 <body>
 
@@ -28,7 +29,7 @@
                 <li><a href="borrower-dashboard.html" class="nav-active">Borrower</a></li>
             </ul></nav>
             <div class="auth-buttons">
-                <button class="dark-toggle" id="darkToggle"><i class="fas fa-moon"></i> Dark</button>
+                <button class="dark-toggle" id="darkToggle" title="Toggle theme" aria-label="Toggle colour theme"><i class="fas fa-moon"></i></button>
                 <span class="dash-user-name" id="dashUserName"></span>
                 <button class="btn btn-outline" onclick="logout()">Log Out</button>
             </div>
@@ -104,29 +105,110 @@
         <!-- BROWSE TAB -->
         <div class="tab-content" id="tab-browse">
             <div class="dash-header">
-                <h1>Browse Available Items</h1>
-            </div>
-            <div class="browse-filters">
-                <div class="search-bar-dash">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="browseSearch" placeholder="Search items..." oninput="filterBrowse()" />
+                <div>
+                    <h1>Browse Available Items</h1>
+                    <p id="p3ResultCount" style="color:var(--gray);font-size:0.9rem;margin-top:2px"></p>
                 </div>
-                <select id="browseCategory" onchange="filterBrowse()">
-                    <option value="">All Categories</option>
-                    <option value="electronics">Electronics</option>
-                    <option value="textbooks">Textbooks</option>
-                    <option value="tools">Tools</option>
-                    <option value="clothing">Clothing</option>
-                </select>
-                <select id="browseCondition" onchange="filterBrowse()">
-                    <option value="">Any Condition</option>
-                    <option value="New">New</option>
-                    <option value="Excellent">Excellent</option>
-                    <option value="Good">Good</option>
-                </select>
+                <button class="btn btn-outline" style="font-size:0.82rem;padding:7px 14px" onclick="p3_saveCurrentSearch()" title="Save this search">
+                    <i class="fas fa-bookmark"></i> Save Search
+                </button>
             </div>
-            <div class="browse-grid" id="browseGrid">
-                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading items...</p></div>
+
+            <!-- Search bar with typeahead -->
+            <div class="p3-search-wrap">
+                <div class="p3-search-bar">
+                    <i class="fas fa-search p3-search-icon" aria-hidden="true"></i>
+                    <input type="text" id="p3SearchInput" class="p3-search-input"
+                        placeholder="Search laptops, textbooks, calculators…"
+                        autocomplete="off" aria-label="Search items" aria-autocomplete="list"
+                        aria-controls="p3SuggestBox" />
+                    <button class="p3-search-clear" id="p3SearchClear" onclick="p3_clearSearch()" aria-label="Clear search" style="display:none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p3-suggest-box" id="p3SuggestBox" role="listbox" style="display:none"></div>
+            </div>
+
+            <!-- Filter bar -->
+            <div class="p3-filter-bar" id="p3FilterBar">
+                <div class="p3-filter-row" id="p3FilterPanel">
+                    <div class="p3-filter-group">
+                        <label class="p3-filter-label" for="p3CatFilter">Category</label>
+                        <select id="p3CatFilter" class="p3-filter-select" aria-label="Filter by category">
+                            <option value="">All</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="textbooks">Textbooks</option>
+                            <option value="tools">Tools</option>
+                            <option value="clothing">Clothing</option>
+                        </select>
+                    </div>
+                    <div class="p3-filter-group">
+                        <label class="p3-filter-label" for="p3CondFilter">Condition</label>
+                        <select id="p3CondFilter" class="p3-filter-select" aria-label="Filter by condition">
+                            <option value="">Any</option>
+                            <option value="New">New</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Good">Good</option>
+                        </select>
+                    </div>
+                    <div class="p3-filter-group">
+                        <label class="p3-filter-label" for="p3UnitFilter">Price Unit</label>
+                        <select id="p3UnitFilter" class="p3-filter-select" aria-label="Filter by price unit">
+                            <option value="">Any</option>
+                            <option value="day">Per Day</option>
+                            <option value="week">Per Week</option>
+                            <option value="month">Per Month</option>
+                            <option value="event">Per Event</option>
+                            <option value="subject">Per Subject</option>
+                        </select>
+                    </div>
+                    <div class="p3-filter-group">
+                        <label class="p3-filter-label" for="p3AvailFilter">Availability</label>
+                        <select id="p3AvailFilter" class="p3-filter-select" aria-label="Filter by availability">
+                            <option value="">All</option>
+                            <option value="available">Available Now</option>
+                            <option value="rented">Rented</option>
+                        </select>
+                    </div>
+                    <div class="p3-filter-group p3-price-range">
+                        <label class="p3-filter-label">Price Range (₹)</label>
+                        <div style="display:flex;gap:6px;align-items:center">
+                            <input type="number" id="p3MinPrice" class="p3-price-input" placeholder="Min" min="0" aria-label="Minimum price" />
+                            <span style="color:var(--gray);font-size:0.8rem">–</span>
+                            <input type="number" id="p3MaxPrice" class="p3-price-input" placeholder="Max" min="0" aria-label="Maximum price" />
+                        </div>
+                    </div>
+                    <div class="p3-filter-group">
+                        <label class="p3-filter-label" for="p3DeptFilter">Department</label>
+                        <input type="text" id="p3DeptFilter" class="p3-filter-select" placeholder="e.g. CSE" aria-label="Filter by department" />
+                    </div>
+                </div>
+
+                <div class="p3-filter-actions">
+                    <div class="p3-sort-wrap">
+                        <label class="p3-filter-label" for="p3SortSelect" style="white-space:nowrap">Sort by</label>
+                        <select id="p3SortSelect" class="p3-filter-select" aria-label="Sort items">
+                            <option value="default">Default</option>
+                            <option value="price_asc">Price: Low → High</option>
+                            <option value="price_desc">Price: High → Low</option>
+                            <option value="name_asc">Name A–Z</option>
+                            <option value="newest">Newest First</option>
+                        </select>
+                    </div>
+                    <button class="p3-clear-btn" onclick="p3_clearAllFilters()" aria-label="Clear all filters">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active filter chips -->
+            <div class="p3-active-chips" id="p3ActiveChips" style="display:none"></div>
+
+            <!-- Results grid -->
+            <div class="browse-grid-v2" id="browseGrid">
+                <div class="ic-skeleton"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div><div class="skel-line xshort"></div></div></div>
+                <div class="ic-skeleton"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div><div class="skel-line xshort"></div></div></div>
+                <div class="ic-skeleton"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line short"></div><div class="skel-line xshort"></div></div></div>
             </div>
         </div>
 
